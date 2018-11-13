@@ -327,12 +327,12 @@ div.tocify {
 <div id="import-data-sets" class="section level2">
 <h2><strong>Import Data Sets</strong></h2>
 <pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## -- Attaching packages ------------------------------------------------------------------ tidyverse 1.2.1 --</code></pre>
+<pre><code>## -- Attaching packages ----------------- tidyverse 1.2.1 --</code></pre>
 <pre><code>## √ ggplot2 3.0.0     √ purrr   0.2.5
 ## √ tibble  1.4.2     √ dplyr   0.7.6
 ## √ tidyr   0.8.1     √ stringr 1.3.1
 ## √ readr   1.1.1     √ forcats 0.3.0</code></pre>
-<pre><code>## -- Conflicts --------------------------------------------------------------------- tidyverse_conflicts() --
+<pre><code>## -- Conflicts -------------------- tidyverse_conflicts() --
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
 <pre class="r"><code>library(rgdal)</code></pre>
@@ -405,7 +405,7 @@ r &lt;- raster(
 
 raster_spatial_richness&lt;- fasterize(all_species, r, background = 0, fun = &quot;sum&quot;, by = NULL)
 plot(raster_spatial_richness)</code></pre>
-<p><img src="first_draft_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 </div>
 <div id="spatial-pattern-of-alpha-biodiversity" class="section level3">
 <h3><strong>Spatial pattern of alpha biodiversity</strong></h3>
@@ -424,7 +424,7 @@ simpson&lt;- all_alphadiversity %&gt;%diversity(index=&quot;simpson&quot;)
 ## names       : layer 
 ## values      : 0.8333333, 1  (min, max)</code></pre>
 <pre class="r"><code>plot(raster_alphadiversity1)</code></pre>
-<p><img src="first_draft_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 </div>
 </div>
