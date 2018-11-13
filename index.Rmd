@@ -1,85 +1,85 @@
 ---
-title: "I have the best titles"
-author: Your name here
-subtitle: Subtitle here if desired
+title: "Spatial pattern of plant species' biodiversity in South Africa"
+author: "Qianru Liao"
+date: "2018年11月12日"
+output: html_document
 ---
+### Introduction
+Fuguring out the pattern of distribution of species richness and the pattern spatial turnover of plant species are necessary for identifying target areas in species conservation. And this pattern can not be divorced from spatial scale. Comparing the pattern in different spatial scale will give a conprehensive imformation for helping conserving plant species.
 
-# Introduction
-My really awesome and complete introduction will go here.  
+# **Problem / Question**
+1.What is the pattern of bird species richness in South Africa?
+2.what is the spatial pattern of alpha diversity of plant species in South Africa?
+2.What is the spatial pattern of beta diversity of plant species in South Africa?
 
-> I know words.  I have the best words.  ~ Donald Trump
+# **Materials and Methods**
+## **Method**
+*This study will use the following packages to answer the questions above.
+tidyverse
+rgdal
+sf
+foreach
+doParallel
+registerDoParallel(2)
 
-# Materials and methods
-
-Narrative and most code will go here.  Describe what you are doing and show how to do it (with code).
-
-You can do bullets like this:
-
-* The first most important thing
-* The second most important thing
-* The third most important thing
-
-You can do numbers like this:
-
-1. The first most important thing
-2. The second most important thing
-3. The third most important thing
-
-See [http://rmarkdown.rstudio.com/](http://rmarkdown.rstudio.com/) for all the amazing things you can do.
-
-
-Here's my first code chunk.
+##**Import Data Sets**
 ```{r}
-1+2
+library(tidyverse)
+library(rgdal)
+library(sf)
+library(foreach)
+library(doParallel)
+registerDoParallel(2)
+library(fasterize)
+library(sp)
+library(raster)
+library(vegan)
 ```
 
-Load any required packages in a code chunk (you may need to install some packages):
-
-```{r, message=F, warning=F}
-library(dplyr)
-library(ggplot2)
-library(maps)
-library(spocc)
-knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
-```
-
-
-We are going to use the `occ()` function to download _occurrence_ records for the American robin (_Turdus migratorius_) from the [Global Biodiversity Information Facility](gbif.org).
-
-<img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/Turdus-migratorius-002.jpg" alt="alt text" width="200">
-<small><small><small>Licensed under CC BY-SA 3.0 via [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Turdus-migratorius-002.jpg#/media/File:Turdus-migratorius-002.jpg)</small></small></small>
-
-```{r, warning=F} 
-## define which species to query
-sp='Turdus migratorius'
-
-## run the query and convert to data.frame()
-d = occ(query=sp, from='ebird',limit = 100) %>% occ2df()
-```
-This can take a few seconds.
-
-```{r, fig.width=6, fig.height=3, fig.cap="Map illustrating the known occurrence locations"}
-# Load coastline
-map=map_data("world")
-
-ggplot(d,aes(x=longitude,y=latitude))+
-  geom_polygon(aes(x=long,y=lat,group=group),data=map)+
-  geom_point(col="red")+
-  coord_equal()
-```
-
-
-# Results
-
-Show tables, plots, etc. and describe them.
+###**import shapefiles from each of files**
 
 ```{r}
-hist(d$latitude)
+datadir="C:/Users/air/Desktop/projectR/"
+files=data.frame(
+  path=list.files(datadir, recursive=T, pattern="shp$"),stringsAsFactors = F)%>%
+  mutate(file=basename(path),
+         species=gsub(".shp","",file),
+         family=gsub("[/].*$","",path))
+all_species = foreach(i=1:nrow(files),.combine=rbind,.packages = c("dplyr","sf")) %dopar% {
+  sp=read_sf(file.path(datadir,files$path[i]))%>%
+    select(-1)%>%
+    mutate(family=files$family[i],species=files$species[i]) %>% st_set_crs(4326)
+  #return(st_crs(sp))
+    return(sp)
+}
 ```
 
-# Conclusions
+###**Spatial Richness Map**
+```{r}
+cfr_bbox=st_bbox(all_species)
+r <- raster(
+            xmn=cfr_bbox$xmin, 
+            xmx=cfr_bbox$xmax, 
+            ymn=cfr_bbox$ymin, 
+            ymx=cfr_bbox$ymax,
+            res=0.1)
 
-What have you learned?  Are there any broader implications?
+raster_spatial_richness<- fasterize(all_species, r, background = 0, fun = "sum", by = NULL)
+plot(raster_spatial_richness)
+```
 
-# References
+###**Spatial pattern of alpha biodiversity**
+```{r}
+raster_alphadiversity<- fasterize(all_species, r, background = 0, by = "species")
+raster_alphadiversity1<- fasterize(all_species, r, background = 0, by = NULL)
+all_alphadiversity=as.data.frame(raster_alphadiversity)
+library(vegan)
+simpson<- all_alphadiversity %>%diversity(index="simpson")
+`values<-`(raster_alphadiversity1, simpson)
+plot(raster_alphadiversity1)
+```
 
+#**Conclusion**
+What have you learned? Are there any broader implications?
+
+#**References**
