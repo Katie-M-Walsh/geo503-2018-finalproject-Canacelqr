@@ -4,7 +4,7 @@ author: "Qianru Liao"
 date: "2018年11月12日"
 output: html_document
 ---
-### Introduction
+### Introduction 
 Fuguring out the pattern of distribution of species richness and the pattern spatial turnover of plant species are necessary for identifying target areas in species conservation. And this pattern can not be divorced from spatial scale. Comparing the pattern in different spatial scale will give a conprehensive imformation for helping conserving plant species.
 
 # **Problem / Question**
